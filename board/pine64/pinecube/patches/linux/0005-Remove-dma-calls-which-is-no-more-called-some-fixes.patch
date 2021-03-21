@@ -1,0 +1,66 @@
+From 50569287b6a1b0378ffb3ca163f55a3e20400310 Mon Sep 17 00:00:00 2001
+From: Marek Kraus <gamelaster@outlook.com>
+Date: Sat, 20 Mar 2021 20:23:37 +0100
+Subject: [PATCH] Remove dma calls which is no more called + some fixes
+
+---
+ drivers/staging/media/sunxi/cedar/ion/ion.c      | 16 +---------------
+ drivers/staging/media/sunxi/cedar/ion/ion_heap.c |  4 ++--
+ 2 files changed, 3 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/staging/media/sunxi/cedar/ion/ion.c b/drivers/staging/media/sunxi/cedar/ion/ion.c
+index faa2e0c9e..b5310341a 100644
+--- a/drivers/staging/media/sunxi/cedar/ion/ion.c
++++ b/drivers/staging/media/sunxi/cedar/ion/ion.c
+@@ -974,18 +974,6 @@ static void ion_dma_buf_release(struct dma_buf *dmabuf)
+ 	ion_buffer_put(buffer);
+ }
+ 
+-static void *ion_dma_buf_kmap(struct dma_buf *dmabuf, unsigned long offset)
+-{
+-	struct ion_buffer *buffer = dmabuf->priv;
+-
+-	return buffer->vaddr + offset * PAGE_SIZE;
+-}
+-
+-static void ion_dma_buf_kunmap(struct dma_buf *dmabuf, unsigned long offset,
+-			       void *ptr)
+-{
+-}
+-
+ static int ion_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
+ 					enum dma_data_direction direction)
+ {
+@@ -1022,9 +1010,7 @@ static struct dma_buf_ops dma_buf_ops = {
+ 	.mmap = ion_mmap,
+ 	.release = ion_dma_buf_release,
+ 	.begin_cpu_access = ion_dma_buf_begin_cpu_access,
+-	.end_cpu_access = ion_dma_buf_end_cpu_access,
+-	.map = ion_dma_buf_kmap,
+-	.unmap = ion_dma_buf_kunmap,
++	.end_cpu_access = ion_dma_buf_end_cpu_access
+ };
+ 
+ static struct dma_buf *__ion_share_dma_buf(struct ion_client *client,
+diff --git a/drivers/staging/media/sunxi/cedar/ion/ion_heap.c b/drivers/staging/media/sunxi/cedar/ion/ion_heap.c
+index 8e3bd3a61..f88260c5c 100644
+--- a/drivers/staging/media/sunxi/cedar/ion/ion_heap.c
++++ b/drivers/staging/media/sunxi/cedar/ion/ion_heap.c
+@@ -106,12 +106,12 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
+ 
+ static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
+ {
+-	void *addr = vm_map_ram(pages, num, -1, pgprot);
++	void *addr = vmap(pages, num, VM_MAP, pgprot);
+ 
+ 	if (!addr)
+ 		return -ENOMEM;
+ 	memset(addr, 0, PAGE_SIZE * num);
+-	vm_unmap_ram(addr, num);
++	vunmap(addr);
+ 
+ 	return 0;
+ }
+-- 
+2.25.1
+

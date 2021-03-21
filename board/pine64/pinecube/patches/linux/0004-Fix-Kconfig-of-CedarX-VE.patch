@@ -1,0 +1,26 @@
+From 380888a5560de786888dfc5dbc4bdd2b451f1a6a Mon Sep 17 00:00:00 2001
+From: Marek Kraus <gamelaster@outlook.com>
+Date: Sat, 20 Mar 2021 19:46:01 +0100
+Subject: [PATCH 3/3] Fix Kconfig of CedarX VE
+
+---
+ drivers/staging/media/sunxi/cedar/ve/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/media/sunxi/cedar/ve/Kconfig b/drivers/staging/media/sunxi/cedar/ve/Kconfig
+index 075cf8dda..d6d5f1cd4 100644
+--- a/drivers/staging/media/sunxi/cedar/ve/Kconfig
++++ b/drivers/staging/media/sunxi/cedar/ve/Kconfig
+@@ -1,7 +1,7 @@
+ config VIDEO_SUNXI_CEDAR_VE
+ 	tristate "Allwinner CedarX VideoEngine Driver"
+-    select DMA_SHARED_BUFFER
+-	---help---
++	select DMA_SHARED_BUFFER
++	help
+ 	  This is the driver for sunxi video decoder, including h264/
+ 	  mpeg4/mpeg2/vc1/rmvb.
+ 	  To compile this driver as a module, choose M here: the
+-- 
+2.25.1
+

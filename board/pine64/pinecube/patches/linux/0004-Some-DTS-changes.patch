@@ -1,0 +1,129 @@
+From f293551c7baad0c132f895a361ef65cebb16b239 Mon Sep 17 00:00:00 2001
+From: Marek Kraus <gamelaster@outlook.com>
+Date: Sat, 20 Mar 2021 20:08:45 +0100
+Subject: [PATCH] Some DTS changes
+
+---
+ arch/arm/boot/dts/sun8i-s3-pinecube.dts | 45 +++--------------------
+ arch/arm/boot/dts/sun8i-v3s.dtsi        | 48 +++++++++++++++++++++----
+ 2 files changed, 46 insertions(+), 47 deletions(-)
+
+diff --git a/arch/arm/boot/dts/sun8i-s3-pinecube.dts b/arch/arm/boot/dts/sun8i-s3-pinecube.dts
+index 4607b0966..c67cb6b7c 100644
+--- a/arch/arm/boot/dts/sun8i-s3-pinecube.dts
++++ b/arch/arm/boot/dts/sun8i-s3-pinecube.dts
+@@ -258,47 +258,10 @@ &codec {
+ 	status = "okay";
+ };
+ 
+-syscon: syscon@1c00000 {
+-    compatible = "allwinner,sun8i-v3s-system-controller", "allwinner,sun8i-h3-system-control", "syscon";
+-    reg = <0x01c00000 0xd0>;
+-    #address-cells = <1>;
+-    #size-cells = <1>;
+-    ranges;
+-
+-    sram_c: sram@1d00000 {
+-        compatible = "mmio-sram";
+-        reg = <0x01d00000 0x80000>;
+-        #address-cells = <1>;
+-        #size-cells = <1>;
+-        ranges = <0 0x01d00000 0x80000>;
+-
+-        ve_sram: sram-section@0 {
+-            compatible = "allwinner,sun8i-v3s-sram-c", "allwinner,sun4i-a10-sram-c1";
+-            reg = <0x000000 0x80000>;
+-        };
+-    };
+-};
+-
+-cedarx: video-codec@1c0e000 {
+-    compatible = "allwinner,sun8i-v3-cedar";
+-    reg = <0x01c0e000 0x1000>;
+-    clocks = <&ccu CLK_BUS_VE>, <&ccu CLK_VE>, <&ccu CLK_DRAM_VE>;
+-    clock-names = "ahb", "mod", "ram";
+-    resets = <&ccu RST_BUS_VE>;
+-    interrupts = <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>;
+-    allwinner,sram = <&ve_sram 1>;
+-    status = "disabled";
++&cedarx {
++    status = "okay";
+ };
+         
+-ion: ion {
+-    compatible = "allwinner,sunxi-ion";
+-    status = "disabled";
+-    heap_cma@0{
+-        compatible = "allwinner,cma";
+-        heap-name  = "cma";
+-        heap-id    = <0x4>;
+-        heap-base  = <0x0>;
+-        heap-size  = <0x0>;
+-        heap-type  = "ion_cma";
+-    };
++&ion {
++    status = "okay";
+ };
+\ No newline at end of file
+diff --git a/arch/arm/boot/dts/sun8i-v3s.dtsi b/arch/arm/boot/dts/sun8i-v3s.dtsi
+index ea26fef67..a44b5f1bd 100644
+--- a/arch/arm/boot/dts/sun8i-v3s.dtsi
++++ b/arch/arm/boot/dts/sun8i-v3s.dtsi
+@@ -139,12 +139,48 @@ mixer0_out_tcon0: endpoint {
+ 		};
+ 
+ 		syscon: system-control@1c00000 {
+-			compatible = "allwinner,sun8i-v3s-system-control",
+-				     "allwinner,sun8i-h3-system-control";
+-			reg = <0x01c00000 0x1000>;
+-			#address-cells = <1>;
+-			#size-cells = <1>;
+-			ranges;
++		    compatible = "allwinner,sun8i-v3s-system-control", "allwinner,sun8i-h3-system-control", "syscon";
++		    reg = <0x01c00000 0xd0>;
++		    #address-cells = <1>;
++		    #size-cells = <1>;
++		    ranges;
++
++		    sram_c: sram@1d00000 {
++		        compatible = "mmio-sram";
++		        reg = <0x01d00000 0x80000>;
++		        #address-cells = <1>;
++		        #size-cells = <1>;
++		        ranges = <0 0x01d00000 0x80000>;
++
++		        ve_sram: sram-section@0 {
++		            compatible = "allwinner,sun8i-v3s-sram-c", "allwinner,sun4i-a10-sram-c1";
++		            reg = <0x000000 0x80000>;
++		        };
++		    };
++		};
++
++		cedarx: video-codec@1c0e000 {
++		    compatible = "allwinner,sun8i-v3-cedar";
++		    reg = <0x01c0e000 0x1000>;
++		    clocks = <&ccu CLK_BUS_VE>, <&ccu CLK_VE>, <&ccu CLK_DRAM_VE>;
++		    clock-names = "ahb", "mod", "ram";
++		    resets = <&ccu RST_BUS_VE>;
++		    interrupts = <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>;
++		    allwinner,sram = <&ve_sram 1>;
++		    status = "disabled";
++		};
++		        
++		ion: ion {
++		    compatible = "allwinner,sunxi-ion";
++		    status = "disabled";
++		    heap_cma@0{
++		        compatible = "allwinner,cma";
++		        heap-name  = "cma";
++		        heap-id    = <0x4>;
++		        heap-base  = <0x0>;
++		        heap-size  = <0x0>;
++		        heap-type  = "ion_cma";
++		    };
+ 		};
+ 
+ 		dma: dma-controller@01c02000 {
+-- 
+2.25.1
+
